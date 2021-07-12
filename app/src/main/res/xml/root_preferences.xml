@@ -1,0 +1,37 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <PreferenceCategory app:title="General">
+
+        <SwitchPreferenceCompat
+            app:key="auto_play"
+            app:defaultValue="true"
+            app:summaryOff="Disabled"
+            app:summaryOn="Enabled"
+            app:title="Auto Play Videos" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Orientation">
+
+        <ListPreference
+            app:defaultValue="Landscape"
+            app:key="orientation"
+            app:title="Orientation"
+            app:summary="%s"
+            app:entries="@array/orientations_entries"
+            app:entryValues="@array/orientation_values"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Weather">
+
+        <EditTextPreference
+            app:defaultValue="Nairobi"
+            app:key="weather_location"
+            app:title="Weather Location"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

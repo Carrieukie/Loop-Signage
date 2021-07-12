@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/app_navigation"
+    app:startDestination="@id/fragmentWatch">
+
+    <fragment
+        android:id="@+id/fragmentWatch"
+        android:name="com.example.mytv.ui.fragments.watch.FragmentWatch"
+        android:label="FragmentWatch" >
+        <action
+            android:id="@+id/Watch_to_settings"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.mytv.ui.fragments.settings.SettingsFragment"
+        android:label="SettingsFragment" />
+</navigation>
