@@ -3,4 +3,3 @@ This is an application used for digital signage to display messages to particula
 
 ## 🚧WORK IN PROGRESS🚧
 
-ACHA UMBWAKNI
