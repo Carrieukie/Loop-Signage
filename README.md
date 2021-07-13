@@ -3,3 +3,5 @@ This is an application used for digital signage to display messages to particula
 
 ## 🚧WORK IN PROGRESS🚧
 
+<img scr="https://github.com/Carrieukie/Loop-Signage/blob/main/assets/loop_signage.gif"/>
+
