@@ -4,11 +4,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_view"
     style="@style/Widget.MaterialComponents.CardView"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:layout_weight="1"
     android:padding="10dp"
-    app:cardBackgroundColor="@color/colorAccent"
     app:cardCornerRadius="20dp">
 
     <LinearLayout
@@ -16,17 +15,17 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:gravity="center"
+        android:background="@drawable/gradient_weather"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/textView_city"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center"
             android:text="Nairobi"
-            android:textSize="20sp"
             android:textColor="@color/black"
+            android:textSize="34sp"
             android:textStyle="bold" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -34,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:fontFamily="sans-serif-thin"
+            android:fontFamily="sans-serif"
             android:gravity="center"
             android:padding="5dp"
             android:text="Today,12 July 2021"
@@ -118,7 +117,8 @@
             android:layout_margin="10dp"
             android:gravity="center"
             android:text="Cloudy"
-            android:textColor="@color/colorPrimary" />
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold" />
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

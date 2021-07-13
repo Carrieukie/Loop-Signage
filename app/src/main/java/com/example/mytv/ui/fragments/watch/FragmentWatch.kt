@@ -65,6 +65,12 @@ class FragmentWatch : Fragment(R.layout.fragment_watch), EasyPermissions.Permiss
     private var temp : TextView? = null
     private var weatherDesc : TextView? = null
 
+    //time
+    private var greeting : TextView? = null
+
+    //Bottom sheet
+    private var marquee : TextView? = null
+
     //Booleans
     private var playWhenReady = true
 
@@ -99,7 +105,11 @@ class FragmentWatch : Fragment(R.layout.fragment_watch), EasyPermissions.Permiss
         image = view.findViewById(R.id.imegeview_weather)
         temp = view.findViewById(R.id.textView_temp)
         weatherDesc = view.findViewById(R.id.textView_desc)
+        greeting = view.findViewById(R.id.textView_greeting)
+        marquee = view.findViewById(R.id.textView_marquee)
+        marquee?.isSelected = true
 
+        greeting?.text = getGreetingMessage()
 
         if (!hasStoragePermissions()) {
             requestStoragePermission()
@@ -127,13 +137,13 @@ class FragmentWatch : Fragment(R.layout.fragment_watch), EasyPermissions.Permiss
 
     private fun bindWeatherData(data: Weather?) {
         city?.text = data?.city?.name
-        date?.text = getCurrentTime()
-        temp?.text = data?.list?.get(0)?.main?.feelsLike?.minus(273.15)?.roundToInt().toString().plus("\u00b0")
+        date?.text = "${getCurrentTime()}"
+        temp?.text = "Feels like ${data?.list?.get(0)?.main?.tempMax?.minus(273.15)?.roundToInt().toString().plus("\u00b0 C")}"
         weatherDesc?.text = data?.list?.get(0)?.weather?.get(0)?.description
     }
 
     private fun getCurrentTime(): String {
-        val sdf = SimpleDateFormat("dd, MMMM yyyy HH:mm", Locale.getDefault())
+        val sdf = SimpleDateFormat("EEE, d MMM yyyy", Locale.getDefault())
         return sdf.format(Date())
     }
 
@@ -451,6 +461,18 @@ class FragmentWatch : Fragment(R.layout.fragment_watch), EasyPermissions.Permiss
         private const val PICK_FOLDER_REQUEST_CODE: Int = 0
         private const val TAG = "FragmentWatch"
 
+    }
+
+    fun getGreetingMessage():String{
+        val c = Calendar.getInstance()
+
+        return when (c.get(Calendar.HOUR_OF_DAY)) {
+            in 0..11 -> "Good Morning"
+            in 12..15 -> "Good Afternoon"
+            in 16..20 -> "Good Evening"
+            in 21..23 -> "Good Night"
+            else -> "Hello"
+        }
     }
 
 }
