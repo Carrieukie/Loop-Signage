@@ -3,7 +3,7 @@ package com.example.mytv.datastructures
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 
 
-class ResizeModes(currentMode : Int?) {
+class ResizeModes(currentMode: Int?) {
 
 
     private var current = 0
@@ -18,8 +18,8 @@ class ResizeModes(currentMode : Int?) {
 
     init {
 
-        for (mode in  modes){
-            if (currentMode != mode){
+        for (mode in modes) {
+            if (currentMode != mode) {
                 ++current
                 break
             }
@@ -29,9 +29,9 @@ class ResizeModes(currentMode : Int?) {
     }
 
 
-    fun getNextMode() : Int{
+    fun getNextMode(): Int {
         current++
-        if (current >= modes.size){
+        if (current >= modes.size) {
             current = 0
         }
         return modes[current]

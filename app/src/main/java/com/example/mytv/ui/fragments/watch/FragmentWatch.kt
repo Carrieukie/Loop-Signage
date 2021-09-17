@@ -10,21 +10,16 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
-import com.airbnb.lottie.LottieAnimationView
-import com.airbnb.lottie.LottieDrawable
+import coil.load
 import com.example.mytv.R
 import com.example.mytv.datastructures.ResizeModes
 import com.example.mytv.model.Weather
@@ -66,15 +61,19 @@ class FragmentWatch : Fragment(R.layout.fragment_watch), EasyPermissions.Permiss
     //Weather
     private var city: TextView? = null
     private var date: TextView? = null
-    private var image: LottieAnimationView? = null
+    private var image: ImageView? = null
     private var temp: TextView? = null
     private var weatherDesc: TextView? = null
 
+
     //time
-    private var greeting: TextView? = null
+//    private var greeting: TextView? = null
+    private var timeClock: TextClock? = null
+
 
     //Bottom sheet
     private var marquee: TextView? = null
+
 
     //Booleans
     private var playWhenReady = true
@@ -109,17 +108,20 @@ class FragmentWatch : Fragment(R.layout.fragment_watch), EasyPermissions.Permiss
         date = view.findViewById(R.id.textView_date)
         image = view.findViewById(R.id.imageview_weather)
         temp = view.findViewById(R.id.textView_temp)
-        weatherDesc = view.findViewById(R.id.textView_desc)
-        greeting = view.findViewById(R.id.textView_greeting)
+        timeClock= view.findViewById(R.id.time_text_clock)
+
+
+//        weatherDesc = view.findViewById(R.id.textView_desc)
+//        greeting = view.findViewById(R.id.textView_greeting)
 
         marquee = view.findViewById(R.id.textView_marquee)
         marquee?.isSelected = true
 
-        greeting?.text = getGreetingMessage()
-
         if (!hasStoragePermissions()) {
             requestStoragePermission()
         }
+
+        setTextClockFont()
         setUpSharedPreferences()
 
     }
@@ -143,24 +145,28 @@ class FragmentWatch : Fragment(R.layout.fragment_watch), EasyPermissions.Permiss
 
     private fun bindWeatherData(data: Weather?) {
         city?.text = data?.city?.name
-        date?.text = "${getCurrentTime()}"
-        temp?.text = "${
-            data?.list?.get(0)?.main?.tempMax?.minus(273.15)?.roundToInt().toString()
-                .plus("\u00b0 C")
-        }"
+        date?.text = getCurrentTime()
+        temp?.text = data?.list?.get(0)?.main?.tempMax?.minus(273.15)?.roundToInt().toString()
+            .plus("\u00b0 C")
+        date?.text = getCurrentTime()
+        temp?.text = data?.list?.get(0)?.main?.feelsLike?.minus(273.15)?.roundToInt().toString().plus("\u00b0")
         weatherDesc?.text = data?.list?.get(0)?.weather?.get(0)?.description
         image?.apply {
-            setAnimationFromUrl(
+            load(
                 WeatherUtils.getSmallArtResourceIdForWeatherCondition(
                     data?.list?.get(0)?.weather?.get(0)?.id!!
                 )
             )
-            repeatCount = LottieDrawable.INFINITE
         }
     }
 
+    private fun setTextClockFont(){
+        val typeface = ResourcesCompat.getFont(requireContext(),R.font.baloo)
+        timeClock?.typeface = typeface
+    }
+
     private fun getCurrentTime(): String {
-        val sdf = SimpleDateFormat("EEE, d MMM yyyy", Locale.getDefault())
+        val sdf = SimpleDateFormat("dd, MMMM yyyy", Locale.getDefault())
         return sdf.format(Date())
     }
 
@@ -492,4 +498,3 @@ class FragmentWatch : Fragment(R.layout.fragment_watch), EasyPermissions.Permiss
     }
 
 }
-
