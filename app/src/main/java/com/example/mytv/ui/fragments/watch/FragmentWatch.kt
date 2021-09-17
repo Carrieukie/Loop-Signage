@@ -3,7 +3,6 @@ package com.example.mytv.ui.fragments.watch
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.database.Cursor
@@ -12,10 +11,13 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
+import android.widget.*
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import coil.load
 import com.example.mytv.R
@@ -39,10 +41,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToInt
-import android.graphics.Typeface
-import android.widget.*
-import androidx.core.content.res.ResourcesCompat
-import androidx.navigation.findNavController
 
 
 @AndroidEntryPoint
@@ -500,4 +498,3 @@ class FragmentWatch : Fragment(R.layout.fragment_watch), EasyPermissions.Permiss
     }
 
 }
-
