@@ -3,6 +3,7 @@ package com.example.mytv.ui.fragments.watch
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.database.Cursor
@@ -10,24 +11,19 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
+import coil.load
 import com.example.mytv.R
 import com.example.mytv.datastructures.ResizeModes
 import com.example.mytv.model.Weather
 import com.example.mytv.utils.Resource
 import com.example.mytv.utils.UtilityFunctions.getOrientation
+import com.example.mytv.utils.WeatherUtils
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
@@ -43,6 +39,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToInt
+import android.graphics.Typeface
+import android.widget.*
+import androidx.core.content.res.ResourcesCompat
+import androidx.navigation.findNavController
 
 
 @AndroidEntryPoint
@@ -50,26 +50,32 @@ class FragmentWatch : Fragment(R.layout.fragment_watch), EasyPermissions.Permiss
     SharedPreferences.OnSharedPreferenceChangeListener {
 
     private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var resizeModes : ResizeModes
+    private lateinit var resizeModes: ResizeModes
     private val viewModel by viewModels<FragmentWatchViewModel>()
+
     //views
     //PlayerView
     private var playerView: PlayerView? = null
     private var fillModesButton: ImageButton? = null
     private var player: SimpleExoPlayer? = null
     private var selectFolder: ImageButton? = null
+
     //Weather
-    private var city : TextView? = null
-    private var date : TextView? = null
-    private var image : ImageView? = null
-    private var temp : TextView? = null
-    private var weatherDesc : TextView? = null
+    private var city: TextView? = null
+    private var date: TextView? = null
+    private var image: ImageView? = null
+    private var temp: TextView? = null
+    private var weatherDesc: TextView? = null
+
 
     //time
-    private var greeting : TextView? = null
+//    private var greeting: TextView? = null
+    private var timeClock: TextClock? = null
+
 
     //Bottom sheet
-    private var marquee : TextView? = null
+    private var marquee: TextView? = null
+
 
     //Booleans
     private var playWhenReady = true
@@ -102,18 +108,22 @@ class FragmentWatch : Fragment(R.layout.fragment_watch), EasyPermissions.Permiss
 
         city = view.findViewById(R.id.textView_city)
         date = view.findViewById(R.id.textView_date)
-        image = view.findViewById(R.id.imegeview_weather)
+        image = view.findViewById(R.id.imageview_weather)
         temp = view.findViewById(R.id.textView_temp)
-        weatherDesc = view.findViewById(R.id.textView_desc)
-        greeting = view.findViewById(R.id.textView_greeting)
+        timeClock= view.findViewById(R.id.time_text_clock)
+
+
+//        weatherDesc = view.findViewById(R.id.textView_desc)
+//        greeting = view.findViewById(R.id.textView_greeting)
+
         marquee = view.findViewById(R.id.textView_marquee)
         marquee?.isSelected = true
-
-        greeting?.text = getGreetingMessage()
 
         if (!hasStoragePermissions()) {
             requestStoragePermission()
         }
+
+        setTextClockFont()
         setUpSharedPreferences()
 
     }
@@ -137,13 +147,28 @@ class FragmentWatch : Fragment(R.layout.fragment_watch), EasyPermissions.Permiss
 
     private fun bindWeatherData(data: Weather?) {
         city?.text = data?.city?.name
-        date?.text = "${getCurrentTime()}"
-        temp?.text = "Feels like ${data?.list?.get(0)?.main?.tempMax?.minus(273.15)?.roundToInt().toString().plus("\u00b0 C")}"
+        date?.text = getCurrentTime()
+        temp?.text = data?.list?.get(0)?.main?.tempMax?.minus(273.15)?.roundToInt().toString()
+            .plus("\u00b0 C")
+        date?.text = getCurrentTime()
+        temp?.text = data?.list?.get(0)?.main?.feelsLike?.minus(273.15)?.roundToInt().toString().plus("\u00b0")
         weatherDesc?.text = data?.list?.get(0)?.weather?.get(0)?.description
+        image?.apply {
+            load(
+                WeatherUtils.getSmallArtResourceIdForWeatherCondition(
+                    data?.list?.get(0)?.weather?.get(0)?.id!!
+                )
+            )
+        }
+    }
+
+    private fun setTextClockFont(){
+        val typeface = ResourcesCompat.getFont(requireContext(),R.font.baloo)
+        timeClock?.typeface = typeface
     }
 
     private fun getCurrentTime(): String {
-        val sdf = SimpleDateFormat("EEE, d MMM yyyy", Locale.getDefault())
+        val sdf = SimpleDateFormat("dd, MMMM yyyy", Locale.getDefault())
         return sdf.format(Date())
     }
 
@@ -172,11 +197,11 @@ class FragmentWatch : Fragment(R.layout.fragment_watch), EasyPermissions.Permiss
     private fun initializePlayer() {
 
         player = SimpleExoPlayer.Builder(requireContext()).build()
-        playerView!!.player = player
-        player!!.addMediaSources(getMediaSources())
-        player!!.playWhenReady = playWhenReady
-        player!!.seekTo(viewModel.currentWindow, viewModel.playbackPosition)
-        player!!.prepare()
+        playerView?.player = player
+        player?.addMediaSources(getMediaSources())
+        player?.playWhenReady = playWhenReady
+        player?.seekTo(viewModel.currentWindow, viewModel.playbackPosition)
+        player?.prepare()
 
     }
 
@@ -360,7 +385,6 @@ class FragmentWatch : Fragment(R.layout.fragment_watch), EasyPermissions.Permiss
     }
 
 
-
     private fun setUpSharedPreferences() {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
@@ -381,7 +405,7 @@ class FragmentWatch : Fragment(R.layout.fragment_watch), EasyPermissions.Permiss
             requireActivity().requestedOrientation = orientation
         }
 
-        if (key == "resizeMode"){
+        if (key == "resizeMode") {
             val resizeMode = sharedPreferences?.getInt(
                 "resizeMode",
                 AspectRatioFrameLayout.RESIZE_MODE_FIT
@@ -396,7 +420,7 @@ class FragmentWatch : Fragment(R.layout.fragment_watch), EasyPermissions.Permiss
             playerView!!.resizeMode = resizeModes.modes[resizeMode]
         }
 
-        if (key == "folderName"){
+        if (key == "folderName") {
             initializePlayer()
         }
 
@@ -421,17 +445,17 @@ class FragmentWatch : Fragment(R.layout.fragment_watch), EasyPermissions.Permiss
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (resultCode == Activity.RESULT_OK && requestCode == PICK_FOLDER_REQUEST_CODE){
+        if (resultCode == Activity.RESULT_OK && requestCode == PICK_FOLDER_REQUEST_CODE) {
 //            toast(data?.data.toString())
             val foldername = data?.data.toString()
                 .split("%2F")
                 .last()
                 .split("%3A")
                 .last()
-                .replace("%20"," ")
+                .replace("%20", " ")
 
 
-            sharedPreferences.edit().apply{
+            sharedPreferences.edit().apply {
                 putString("folderName", foldername)
                 apply()
             }
@@ -463,7 +487,7 @@ class FragmentWatch : Fragment(R.layout.fragment_watch), EasyPermissions.Permiss
 
     }
 
-    fun getGreetingMessage():String{
+    fun getGreetingMessage(): String {
         val c = Calendar.getInstance()
 
         return when (c.get(Calendar.HOUR_OF_DAY)) {
